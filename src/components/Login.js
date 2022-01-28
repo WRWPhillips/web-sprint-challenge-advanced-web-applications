@@ -1,17 +1,82 @@
+//npm imports
+import axios from 'axios';
 import React from 'react';
 import styled from 'styled-components';
 
-const Login = () => {
+export default class Login extends React.Component {
+    state = {
+      credentials: {
+        username: '',
+        password: ''
+      }
+    };
+
+    handleChanges = e => {
+      this.setState({
+        credentials: {
+          ...this.state.credentials,
+          [e.target.name]: e.target.value
+        },
+        error: ''
+      });
+    };
     
-    return(<ComponentContainer>
+    login = e => {
+      e.preventDefault();
+      axios.post('http://localhost:5000/api/login', this.state.credentials
+      ).then( resp => {
+        console.log(resp);
+        localStorage.setItem("role", resp.data.role);
+        localStorage.setItem("username", resp.data.username);
+        localStorage.setItem("token", resp.data.token);
+        this.props.history.push('/view');
+        this.setState({
+          error: ''
+        });
+      }).catch( err => {
+        console.log(err);
+        this.setState({
+          error: 'Invalid Username and/or Password'
+        });
+        console.log(this.state.error);
+      });
+    }
+
+    render(){
+      return(<ComponentContainer>
         <ModalContainer>
             <h1>Welcome to Blogger Pro</h1>
             <h2>Please enter your account information.</h2>
+            <p id="error">{this.state.error}</p> 
+            <form onSubmit={this.login}>
+             
+              <input
+                type="text"
+                id="username"
+                placeholder="username"
+                name="username"
+                value={this.state.credentials.username}
+                onChange={this.handleChanges}
+              />
+
+              <input
+                id="password"
+                type="password"
+                placeholder="password"
+                name="password"
+                value={this.state.credentials.password}
+                onChange={this.handleChanges}
+              />
+            
+              <button id="submit">Log In</button>
+              
+            </form>
+
         </ModalContainer>
-    </ComponentContainer>);
+      </ComponentContainer>);
+    }
 }
 
-export default Login;
 
 //Task List
 //1. Build login form DOM from scratch, making use of styled components if needed. Make sure the username input has id="username" and the password input as id="password".

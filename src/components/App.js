@@ -1,20 +1,34 @@
+//npm imports
 import React from 'react';
-import { Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import styled from 'styled-components';
 
+//component imports
 import Header from './Header';
 import BloomHeader from './BloomHeader';
 import Login from './Login';
+import View from './View';
+import Logout from './Logout';
+
 
 const App = () => {
+  
+
   return (
+
     <AppContainer>
       <BloomHeader/>
-      <Header/>
+      <Header/>  
       <RouteContainer>
-        <Route exact path="/">
-          <Login/>
-        </Route>          
+        <Switch>
+          <Route exact path="/view" component={View} />
+
+          <Route exact path="/logout" component={Logout} />
+
+          <Route path="/login" component={Login} />
+
+          <Route path="/" component={Login} />
+        </Switch>          
       </RouteContainer>
     </AppContainer>
   )
