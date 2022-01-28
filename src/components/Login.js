@@ -1,62 +1,57 @@
 //npm imports
+import Router, { useHistory } from 'react-router-dom'
 import axios from 'axios';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-export default class Login extends React.Component {
-    state = {
-      credentials: {
+export default function Login() {
+    const [credentials, setCredentials] = useState({
         username: '',
         password: ''
-      }
-    };
+    });
+    
+    const [error, setError] = useState('');
 
-    handleChanges = e => {
-      this.setState({
-        credentials: {
-          ...this.state.credentials,
+    const { push } = useHistory();
+
+    const handleChanges = e => {
+      setCredentials({
+          ...credentials,
           [e.target.name]: e.target.value
-        },
-        error: ''
       });
     };
     
-    login = e => {
+    const login = e => {
       e.preventDefault();
-      axios.post('http://localhost:5000/api/login', this.state.credentials
+      console.log(credentials)
+      axios.post('http://localhost:5000/api/login', credentials
       ).then( resp => {
         console.log(resp);
         localStorage.setItem("role", resp.data.role);
         localStorage.setItem("username", resp.data.username);
         localStorage.setItem("token", resp.data.token);
-        this.props.history.push('/view');
-        this.setState({
-          error: ''
-        });
-      }).catch( err => {
+        setError('');
+        push('/view');
+     }).catch( err => {
         console.log(err);
-        this.setState({
-          error: 'Invalid Username and/or Password'
-        });
-        console.log(this.state.error);
+        setError('Invalid username or password');
       });
     }
 
-    render(){
       return(<ComponentContainer>
         <ModalContainer>
             <h1>Welcome to Blogger Pro</h1>
             <h2>Please enter your account information.</h2>
-            <p id="error">{this.state.error}</p> 
-            <form onSubmit={this.login}>
+            <p id="error">{error}</p> 
+            <form onSubmit={login}>
              
               <input
                 type="text"
                 id="username"
                 placeholder="username"
                 name="username"
-                value={this.state.credentials.username}
-                onChange={this.handleChanges}
+                value={credentials.username}
+                onChange={handleChanges}
               />
 
               <input
@@ -64,8 +59,8 @@ export default class Login extends React.Component {
                 type="password"
                 placeholder="password"
                 name="password"
-                value={this.state.credentials.password}
-                onChange={this.handleChanges}
+                value={credentials.password}
+                onChange={handleChanges}
               />
             
               <button id="submit">Log In</button>
@@ -74,7 +69,6 @@ export default class Login extends React.Component {
 
         </ModalContainer>
       </ComponentContainer>);
-    }
 }
 
 
